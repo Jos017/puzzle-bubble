@@ -10,11 +10,32 @@
 <body>
   <h1 id="title">Puzzle Bubble</h1>
   <ul id="menu">
-    <li><a class="btn" href="">Play</a></li>
-    <li><button class="btn">How to Play</button></li>
-    <li><button class="btn">About</button></li>
-    <li><button class="btn">Exit</button></li>
+    <li><a id="play-btn" class="btn" href="./game.html">Jugar</a></li>
+    <li><button id="instructions-btn" class="btn">Cómo Jugar</button></li>
+    <li><button id="about-btn" class="btn">Acerca del Juego</button></li>
+    <li><button id="exit-btn" class="btn">Salir</button></li>
   </ul>
+  <div id="instructions-modal" class="modal">
+    <div id="instructions" class="modal-content">
+      <span class="close">&times;</span>
+      <h2>Instrucciones</h2>
+      <h3>Controles</h3>
+      <p>Utiliza las flechas izquierda y derecha para apuntar</p>
+      <p>Presiona la barra espaciadora para disparar</p>
+      <h3>Cómo se Juega</h3>
+      <p>El juego es sencillo. El objetivo es limpiar el tablero de burbujas usando el lanzador de burbujas. Dispara las burbujas de colores para juntar 3 o más del mismo color, y así eliminarlas del juego.</p>
+    </div>
+  </div>
+  <div id="about-modal" class="modal">
+    <div id="about" class="modal-content">
+      <span class="close">&times;</span>
+      <h2>Instrucciones</h2>
+      <h3>Realizado por:</h3>
+      <p>Jose B. Rios</p>
+      <h3>Inspiración</h3>
+      <p>El juego esta inspirado en el juego Puzzle Bobble desarrollado por Taito Corporation para Arcade</p>
+    </div>
+  </div>
   <script src="./js/code.js"></script>
 </body>
 </html>
