@@ -8,8 +8,11 @@ const character1 = new Character((canvas.width - 50) / 2, canvas.height, 50, -10
 
 function startGame() {
   detectKeysPressed(character1);
-  character1.draw();
-  character1.drawAimAssist();
+  setInterval(() => {
+    ctx.clearRect(0, 0, canvas.width, canvas.height)
+    character1.draw();
+    character1.drawAimAssist();
+  }, 1000 / 30);
 }
 
 function detectKeysPressed(character) {

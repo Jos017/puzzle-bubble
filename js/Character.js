@@ -16,11 +16,23 @@ export class Character {
     console.log('Disparar');
   }
   aimLeft() {
-    this.ponterX -= 5;
+    if (this.pointerX >= 10 && this.pointerY === 0) {
+      this.pointerX -= 10;
+    } else if (this.pointerX === 0){
+      this.pointerY += 10;
+    } else if (this.pointerX === canvas.width) {
+      this.pointerY -= 10;
+    }
     console.log('Apuntar Izquierda');
   }
   aimRight() {
-    this.pointerX += 5;
+    if (this.pointerX <= canvas.width - 10 && this.pointerY === 0) {
+      this.pointerX += 10;
+    } else if (this.pointerX === 0) {
+      this.pointerY -= 10;
+    } else if (this.pointerX === canvas.width) {
+      this.pointerY += 10;
+    }
     console.log('Apuntar Derecha');
   }
   selectBall() {}
@@ -31,9 +43,8 @@ export class Character {
     this.ctx.fillRect(this.x, this.y, this.width, this.height);
   }
   drawAimAssist() {
-    this.ctx.clearRect(0, 0, canvas.width, canvas.height)
     this.ctx.beginPath();
-    this.ctx.moveTo(canvas.width / 2, canvas.height);
+    this.ctx.moveTo(canvas.width / 2, canvas.height + this.height / 2);
     this.ctx.lineTo(this.pointerX, this.pointerY);
     this.ctx.stroke();
     this.ctx.closePath();
