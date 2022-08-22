@@ -1,4 +1,4 @@
-import { Ball } from "./Ball";
+import { Ball } from "./Ball.js";
 
 class EnemyBall extends Ball {
   constructor(x, y, width, height, color, image) {
