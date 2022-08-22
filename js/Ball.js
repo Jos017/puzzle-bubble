@@ -11,7 +11,9 @@ export class Ball {
   }
   draw() {
     this.ctx.beginPath();
+    this.ctx.fillStyle = this.color;
     this.ctx.arc(this.x, this.y, this.width / 2, 0, 2 * Math.PI);
+    this.ctx.fill();
     this.ctx.stroke();
     this.ctx.closePath();
   }

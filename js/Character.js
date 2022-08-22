@@ -15,7 +15,6 @@ export class Character {
   }
   shoot() {
     this.shooting = true;
-    console.log('Disparar');
   }
   aimLeft() {
     if (this.pointerX >= 10 && this.pointerY === 0) {
@@ -25,7 +24,6 @@ export class Character {
     } else if (this.pointerX === canvas.width) {
       this.pointerY -= 10;
     }
-    console.log('Apuntar Izquierda');
   }
   aimRight() {
     if (this.pointerX <= canvas.width - 10 && this.pointerY === 0) {
@@ -35,7 +33,6 @@ export class Character {
     } else if (this.pointerX === canvas.width) {
       this.pointerY += 10;
     }
-    console.log('Apuntar Derecha');
   }
   selectBall() {}
   win() {}
