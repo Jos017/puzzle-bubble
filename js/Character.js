@@ -11,8 +11,10 @@ export class Character {
     this.ctx = ctx;
     this.pointerX = canvas.width / 2;
     this.pointerY = 0;
+    this.shooting = false;
   }
   shoot() {
+    this.shooting = true;
     console.log('Disparar');
   }
   aimLeft() {
