@@ -3,7 +3,6 @@ export class Ball {
     this.x = x;
     this.y = y;
     this.radius = radius;
-    // this.height = height;
     this.color = color;
     this.image = image;
     this.canvas = canvas;

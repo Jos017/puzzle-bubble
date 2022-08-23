@@ -7,7 +7,7 @@ const ctx = canvas.getContext('2d');
 
 const character1 = new Character((canvas.width - 50) / 2, canvas.height, 50, -100, '', '', 3, 0, canvas, ctx);
 // const character2 = new Character((canvas.width - 50) / 2, canvas.height, 50, -100, '', '', 3, 0, ctx);
-const proyectile = new ProyectileBall(canvas.width / 2, canvas.height + character1.height / 2, 25, 'red', '', canvas, ctx, character1);
+const proyectile = new ProyectileBall(canvas.width / 2, canvas.height + character1.height / 2, 25, randomColor(), '', canvas, ctx, character1);
 
 const level1 = [
   ['R','R','Y','Y','B','B','G','G'],
@@ -28,13 +28,21 @@ function startGame() {
     // Drawing level
     drawBalls(ballsGrid);
     proyectile.draw();
-    if(character1.shooting === true) {
+    if (character1.shooting === true) {
       if(proyectile.y > proyectile.radius) {
         proyectile.move();
-        detectCollision(ballsGrid, proyectile); 
+        detectCollision(ballsGrid, proyectile);
+        if (proyectile.collision === true) {
+          character1.shooting = false;
+          proyectile.collision = false;
+          paintBall(ballsGrid, proyectile);
+          proyectile.color = randomColor();
+        }
       }
     } else {
       proyectile.updateSpeed();
+      proyectile.x = proyectile.x = canvas.width / 2;
+      proyectile.y = canvas.height + character1.height / 2;
     }
   }, 1000 / 60);
 }
@@ -53,8 +61,12 @@ function detectKeysPressed(character) {
         break;
       case 'Space':
         event.preventDefault();
-        character.shoot();
-        proyectile.moving = true;
+        character.shooting = true;
+        proyectile.moving = true; 
+        console.log('shooting')
+        break;
+      case 'ArrowUp':
+        character.shooting = false;
         break;
     }
   });
@@ -121,9 +133,38 @@ function detectCollision(ballsGrid, proyectile) {
     row.forEach((ball) => {
       if (getCentersDistance(proyectile, ball) <= proyectile.radius + ball.radius && ball.color) {
         proyectile.moving = false;
+        proyectile.collision = true;
       }
     });
   }); 
+}
+
+function getNearestBall(ballsGrid, proyectile) {
+  let nearestDistance = 600;
+  let nearestBallIndex;
+  ballsGrid.forEach((row, rindex) => {
+    row.forEach((ball, bindex) => {
+      if(getCentersDistance(proyectile, ball) <= nearestDistance) {
+        nearestDistance = getCentersDistance(proyectile, ball);
+        nearestBallIndex = [rindex, bindex];
+      }
+    });
+  });
+  return nearestBallIndex;
+}
+
+function paintBall(ballsGrid, proyectile) {
+  const index = getNearestBall(ballsGrid, proyectile);
+  const nearestBall = ballsGrid[index[0]][index[1]];
+  nearestBall.color = proyectile.color;
+  nearestBall.showBall();
+  
+}
+
+function randomColor() {
+  const colors = ['red', 'yellow', 'green', 'blue'];
+  const randColor = colors[Math.floor(Math.random()*colors.length)];
+  return randColor;
 }
 
 function getCentersDistance(ball1, ball2) {

@@ -7,13 +7,14 @@ export class ProyectileBall extends Ball {
     this.speedX = 0;
     this.speedY = 0;
     this.moving = false;
+    this.collision = false;
   }
   updateSpeed() {
     this.speedX = (this.character.pointerX - this.canvas.width / 2);
     this.speedY = -(this.character.pointerY - this.canvas.height - this.character.height / 2);
   }
   move() {
-    if(this.moving === true) {
+    if(this.moving === true && this.collision === false) {
       this.x += this.speedX / 50;
       this.y -= this.speedY / 50;
       if (this.x >= this.canvas.width - this.radius || this.x <= this.radius) {

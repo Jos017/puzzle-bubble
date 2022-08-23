@@ -13,9 +13,6 @@ export class Character {
     this.pointerY = 0;
     this.shooting = false;
   }
-  shoot() {
-    this.shooting = true;
-  }
   aimLeft() {
     if (this.pointerX >= 10 && this.pointerY === 0) {
       this.pointerX -= 10;
