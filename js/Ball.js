@@ -1,9 +1,9 @@
 export class Ball {
-  constructor(x, y, width, height, color, image, canvas, ctx) {
+  constructor(x, y, radius, color, image, canvas, ctx) {
     this.x = x;
     this.y = y;
-    this.width = width;
-    this.height = height;
+    this.radius = radius;
+    // this.height = height;
     this.color = color;
     this.image = image;
     this.canvas = canvas;
@@ -12,7 +12,7 @@ export class Ball {
   draw() {
     this.ctx.beginPath();
     this.ctx.fillStyle = this.color;
-    this.ctx.arc(this.x, this.y, this.width / 2, 0, 2 * Math.PI);
+    this.ctx.arc(this.x, this.y, this.radius, 0, 2 * Math.PI);
     this.ctx.fill();
     this.ctx.stroke();
     this.ctx.closePath();
