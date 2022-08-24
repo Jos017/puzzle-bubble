@@ -9,18 +9,26 @@ const character1 = new Character((canvas.width - 50) / 2, canvas.height, 50, -10
 // const character2 = new Character((canvas.width - 50) / 2, canvas.height, 50, -100, '', '', 3, 0, ctx);
 const proyectile = new ProyectileBall(canvas.width / 2, canvas.height + character1.height / 2, 25, randomColor(), '', canvas, ctx, character1);
 
-const level1 = [
+const level2 = [
   ['R','R','Y','Y','B','B','G','G'],
   ['R','R','Y','Y','B','B','G'],
   ['B','B','G','G','R','R','Y','Y'],
   ['B','G','G','R','R','Y','Y']
 ];
+const level1 = [
+  ['R','R','R','Y','B','B','G','G'],
+  ['R','R','R','Y','B','B','G'],
+  ['B','B','R','G','R','R','Y','Y'],
+  ['B','G','R','R','R','Y','Y']
+]
+// const level1 = [['R']];
 const balls = [];
 
 function startGame() {
   detectKeysPressed(character1);
   const ballsGrid = createBallsGrid();
   transformLevelToBalls(level1, ballsGrid);
+  // deleteBalls(ballsGrid[2][3], ballsGrid);
   setInterval(() => {
     ctx.clearRect(0, 0, canvas.width, canvas.height)
     character1.draw();
@@ -29,17 +37,15 @@ function startGame() {
     drawBalls(ballsGrid);
     proyectile.draw();
     if (character1.shooting === true) {
-      if(proyectile.y > proyectile.radius) {
-        proyectile.move();
-        detectCollision(ballsGrid, proyectile);
-        if (proyectile.collision === true) {
-          character1.shooting = false;
-          proyectile.collision = false;
-          paintBall(ballsGrid, proyectile);
-          proyectile.color = randomColor();
-        }
+      proyectile.move();
+      detectCollision(ballsGrid, proyectile);
+      if (proyectile.collision === true) {
+        character1.shooting = false;
+        proyectile.collision = false;
+        paintBall(ballsGrid, proyectile);
+        proyectile.color = randomColor();
       }
-    } else {
+    } else { 
       proyectile.updateSpeed();
       proyectile.x = proyectile.x = canvas.width / 2;
       proyectile.y = canvas.height + character1.height / 2;
@@ -63,7 +69,6 @@ function detectKeysPressed(character) {
         event.preventDefault();
         character.shooting = true;
         proyectile.moving = true; 
-        console.log('shooting')
         break;
       case 'ArrowUp':
         character.shooting = false;
@@ -131,7 +136,13 @@ function drawBalls(ballsGrid) {
 function detectCollision(ballsGrid, proyectile) {
   ballsGrid.forEach((row) => {
     row.forEach((ball) => {
-      if (getCentersDistance(proyectile, ball) <= proyectile.radius + ball.radius && ball.color) {
+      if (
+        getCentersDistance(proyectile, ball) <= proyectile.radius + ball.radius && 
+        ball.color 
+        ) {
+        proyectile.moving = false;
+        proyectile.collision = true;
+      } else if (proyectile.y <= 0) {
         proyectile.moving = false;
         proyectile.collision = true;
       }
@@ -155,10 +166,11 @@ function getNearestBall(ballsGrid, proyectile) {
 
 function paintBall(ballsGrid, proyectile) {
   const index = getNearestBall(ballsGrid, proyectile);
-  const nearestBall = ballsGrid[index[0]][index[1]];
-  nearestBall.color = proyectile.color;
-  nearestBall.showBall();
-  
+  const paintedBall = ballsGrid[index[0]][index[1]];
+  paintedBall.color = proyectile.color;
+  paintedBall.showBall();
+  deleteBalls(paintedBall, ballsGrid)
+  return paintedBall;
 }
 
 function randomColor() {
@@ -172,4 +184,64 @@ function getCentersDistance(ball1, ball2) {
   const distanceY = ball1.y - ball2.y;
   return Math.sqrt(distanceX**2 + distanceY**2)
 }
+
+function deleteBalls(comparingBall, ballsGrid) {
+  let sameBalls = getAroundBallsColor(comparingBall, ballsGrid);
+  let allColors = [];
+  let uniqueBalls = [];
+  // Iterates for get more same color balls
+  // 2, 3
+  for (let i = 0; i < ballsGrid.length; i++) {
+    sameBalls.forEach((balls) => {
+      const sameColor = getAroundBallsColor(balls, ballsGrid);
+      allColors = allColors.concat(sameColor);
+      sameBalls = sameBalls.concat(allColors)
+    });
+    uniqueBalls = sameBalls.filter((ball, index) => {
+      return sameBalls.indexOf(ball) === index;
+    })
+    sameBalls = uniqueBalls;
+  }
+  console.log(sameBalls)
+  // Gets array of unique balls
+  console.log('unique',uniqueBalls)
+  if (uniqueBalls.length >= 3) {
+    uniqueBalls.forEach((ball) => {
+      ball.display = false;
+      ball.color = ''
+    });
+  }
+}
+
+function getAroundBallsColor(comparingBall, ballsGrid) {
+  // get index of the ball to compare
+  let index;
+  let ballsNear = [];
+  ballsGrid.forEach((row, rindex) => {
+    row.forEach((ball, bindex) => {
+      if(comparingBall.x === ball.x && comparingBall.y === ball.y) {
+        index = [rindex, bindex];
+      }
+    });
+  });
+  // Compare all 6 balls around
+  ballsGrid.forEach((row, rindex) => {
+    row.forEach((ball, bindex) => {
+      if(
+        (ball.x === comparingBall.x - comparingBall.radius && ball.y === comparingBall.y - 2 * comparingBall.radius) ||
+        (ball.x === comparingBall.x + comparingBall.radius && ball.y === comparingBall.y - 2 * comparingBall.radius) ||
+        (ball.x === comparingBall.x - 2 * comparingBall.radius && ball.y === comparingBall.y) ||
+        (ball.x === comparingBall.x + 2 * comparingBall.radius && ball.y === comparingBall.y) ||
+        (ball.x === comparingBall.x - comparingBall.radius && ball.y === comparingBall.y + 2 * comparingBall.radius) ||
+        (ball.x === comparingBall.x + comparingBall.radius && ball.y === comparingBall.y + 2 * comparingBall.radius)
+        ) {
+        if (ball.color === comparingBall.color) {
+          ballsNear.push(ball)
+        }
+      }
+    });
+  });
+  return ballsNear;
+}
+
 startGame();
