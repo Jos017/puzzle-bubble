@@ -35,6 +35,6 @@ export class EnemyBall extends Ball {
     }
   }
   fallDown() {
-    this.y += 5;
+    this.y += 10;
   }
 }

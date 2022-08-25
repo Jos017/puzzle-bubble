@@ -23,6 +23,7 @@ export class ProyectileBall extends Ball {
     this.speedY = 0;
     this.moving = false;
     this.collision = false;
+    this.audioWall = new Audio('./sounds/pbobble-004.wav');
   }
   updateSpeed() {
     this.speedX = (this.character.pointerX - this.canvas.width / 2);
@@ -34,6 +35,9 @@ export class ProyectileBall extends Ball {
       this.y -= this.speedY / 50;
       if (this.x >= this.canvas.width - this.radius || this.x <= this.radius) {
         this.speedX *= -1;
+        this.audioWall.pause();
+        this.audioWall.currentTime = 0.2;
+        this.audioWall.play();
       }
     }
   }

@@ -33,7 +33,6 @@ main {
   background-position: center;
   background-repeat: no-repeat;
   background-size: contain;
-  background-color: red;
 }
 
 #score {
@@ -122,4 +121,20 @@ main {
   border-color: white;
   color: #fff;
   background-color: rgb(225, 113, 37);
+}
+
+.shaking {
+  animation: shaking 0.4s ease infinite;
+  transform-origin: 50% 50%;
+}
+
+@keyframes shaking {
+  0% { transform:translate(0,0) }
+  15% { transform:translate(5px,0) }
+  30% { transform:translate(0,0) }
+  45% { transform:translate(5px,0) }
+  60% { transform:translate(0,0) }
+  75% { transform:translate(5px,0) }
+  90% { transform:translate(0,0) }
+  100% { transform:translate(0,0) }
 }

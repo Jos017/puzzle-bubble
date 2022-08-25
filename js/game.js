@@ -2,6 +2,19 @@ import { Character } from "./Character.js";
 import { ProyectileBall } from "./ProyectileBall.js"
 import { EnemyBall } from "./EnemyBall.js";
 
+const bgAudio = document.getElementById('bg-audio');
+bgAudio.volume = 0.04;
+const shootAudio = new Audio('./sounds/pbobble-002.wav');
+shootAudio.volume = 0.3;
+const popBallsAudio = new Audio('./sounds/pbobble-003.wav');
+popBallsAudio.volume = 0.3;
+const gridDownAudio = new Audio('./sounds/pbobble-009.wav');
+gridDownAudio.volume = 0.3;
+const audioOnHover = new Audio('./sounds/buttons-sound.wav');
+audioOnHover.volume = 0.4;
+const audioOnClick = new Audio('./sounds/pop-click.wav');
+audioOnClick.volume = 0.4;
+
 const loseModal = document.getElementById('lose-modal');
 const loseModalBtn = document.getElementById('lose-btn');
 const winModal = document.getElementById('win-modal');
@@ -9,12 +22,27 @@ const winModalBtn = document.getElementById('win-btn');
 
 loseModalBtn.addEventListener('click', () => {
   startGame();
+  audioOnClick.play();
+  bgAudio.play();
   loseModal.style.display = 'none';
+  score = 0;
+  scoreTag.innerHTML = `Score: <span>${score}</span>`
 });
 winModalBtn.addEventListener('click', () => {
   startGame();
+  audioOnClick.play();
+  bgAudio.play();
   winModal.style.display = 'none';
+  score = 0;
+  scoreTag.innerHTML = `Score: <span>${score}</span>`
 });
+winModalBtn.addEventListener('mouseenter', () => {
+  audioOnHover.play();
+});
+loseModalBtn.addEventListener('mouseenter', () => {
+  audioOnHover.play();
+});
+
 
 const canvas = document.getElementById('canvas');
 const ctx = canvas.getContext('2d');
@@ -29,28 +57,31 @@ scoreTag.id = 'score';
 const character1 = new Character((canvas.width - 50) / 2, canvas.height, 50, -120, '', '', 3, 0, canvas, ctx);
 const proyectile = new ProyectileBall(canvas.width / 2, canvas.height + character1.height / 2, 25, randomColor(), '', canvas, ctx, character1);
 
-const level1 = [
+const level3 = [
   ['R','R','Y','Y','B','B','G','G'],
   ['R','R','Y','Y','B','B','G'],
   ['B','B','G','G','R','R','Y','Y'],
   ['B','G','G','R','R','Y','Y']
 ];
-const level2  = [
+const level1  = [
   ['R','R','R','Y','B','B','G','G'],
   ['R','R','R','Y','B','B','G'],
   ['B','B','R','G','R','R','Y','Y'],
-  ['B','G','R','R','R','Y','Y'],
-  ['R','R','R','Y','B','B','G', 'B']
+  ['B','G','R','R','R','Y','Y']
 ]
-const level3 = [['R', 'R', 'R']] ;
-const balls = [];
+const level2 = [['R', 'R', 'R']] ;
+
+let startListener = true;
 
 function startGame() {
   let floating = [];
   let sameColor = [];
   let deletedBalls = [];
   let winCounter = 8;
-  detectKeysPressed(character1);
+  if (startListener === true) {
+    detectKeysPressed(character1);
+    startListener = false;
+  }
   const ballsGrid = createBallsGrid();
   transformLevelToBalls(level1, ballsGrid);
   let intervalId = setInterval(() => {
@@ -60,7 +91,6 @@ function startGame() {
     ctx.fillStyle = 'red';
     ctx.fillRect(0, 500, 400, 5);
     ctx.beginPath();
-    // ctx.drawImage(arrow, 162, 460, 80, 100);
     // Drawing level
     drawBalls(ballsGrid);
     proyectile.draw();
@@ -94,15 +124,22 @@ function startGame() {
       proyectile.y = canvas.height + character1.height / 2;
       drawImageByColor(proyectile);
     }
-    if (character1.counter === 3) {
-      character1.counter = 0;
+    if (character1.counter === 5) {
       addGrid(ballsGrid);
+      gridDownAudio.pause();
+      gridDownAudio.currentTime = 0.2;
+      gridDownAudio.play();
+      character1.counter = 0;
+      canvas.classList.remove('shaking');
+    } else if (character1.counter === 4) {
+      canvas.classList.add('shaking');
     }
     ballsGrid[ballsGrid.length - 1].forEach((lastBalls) => {
       if(lastBalls.color) {
         setTimeout(() => {
           clearInterval(intervalId);
           loseModal.style.display = 'block';
+          bgAudio.pause();
         },50);
       }
     });
@@ -131,13 +168,14 @@ function detectKeysPressed(character) {
       case 'ArrowRight':
         event.preventDefault();
         character.aimRight();
-        rotation -= 1;
         break;
       case 'Space':
+        shootAudio.currentTime = 0.2;
         event.preventDefault();
         character.shooting = true;
         character.counter += 1;
         proyectile.moving = true; 
+        shootAudio.play();
         break;
       case 'ArrowUp':
         character.shooting = false;
@@ -336,6 +374,9 @@ function deleteSameBalls(comparingBall, ballsGrid) {
       deletedBalls.push(ball);
       ball.color = ''
     });
+    popBallsAudio.pause;
+    popBallsAudio.currentTime = 0.2;
+    popBallsAudio.play();
   }
   return deletedBalls;
 }
@@ -383,7 +424,6 @@ function deleteFloating(ballsGrid) {
         if(!(uniqueBalls.includes(ball))) {
           ball.display = false;
           floating.push(ball)
-          // ball.color = ''
         }
       }
     });
