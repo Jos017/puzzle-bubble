@@ -218,16 +218,16 @@ function drawImageByColor (ball) {
   ball.image = new Image();
     switch (ball.color) {
       case 'red':
-        ball.image.src = '../images/red-ball.png';
+        ball.image.src = './images/red-ball.png';
         break;
       case 'blue':
-        ball.image.src = '../images/blue-ball.png';
+        ball.image.src = './images/blue-ball.png';
         break;
       case 'green':
-        ball.image.src = '../images/green-ball.png';
+        ball.image.src = './images/green-ball.png';
         break;
       case 'yellow':
-        ball.image.src = '../images/yellow-ball.png';
+        ball.image.src = './images/yellow-ball.png';
         break;
   }
 }

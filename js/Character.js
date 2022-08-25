@@ -5,9 +5,9 @@ export class Character {
     this.width = width;
     this.height = height;
     this.image = new Image;
-    this.image.src = '../images/ball-handler.png';
+    this.image.src = './images/ball-handler.png';
     this.imageSecond = new Image;
-    this.imageSecond.src = '../images/bobble.png'
+    this.imageSecond.src = './images/bobble.png'
     this.name = name;
     this.lives = lives;
     this.score = score;
