@@ -14,25 +14,28 @@ const level3 = [
   ['B','B','G','G','R','R','Y','Y'],
   ['B','G','G','R','R','Y','Y']
 ];
-const level1  = [
+const level2  = [
   ['R','R','R','Y','B','B','G','G'],
   ['R','R','R','Y','B','B','G'],
   ['B','B','R','G','R','R','Y','Y'],
   ['B','G','R','R','R','Y','Y'],
   ['R','R','R','Y','B','B','G', 'B']
 ]
-const level2 = [['R']] ;
+const level1 = [['R', 'R', 'R']] ;
 const balls = [];
 
 function startGame() {
+  let floating = [];
+  let winCounter = 8;
   detectKeysPressed(character1);
   const ballsGrid = createBallsGrid();
   transformLevelToBalls(level1, ballsGrid);
-  // deleteSameBalls(ballsGrid[2][3], ballsGrid);
-  setInterval(() => {
+  let intervalId = setInterval(() => {
     ctx.clearRect(0, 0, canvas.width, canvas.height)
     character1.draw();
     character1.drawAimAssist();
+    ctx.fillStyle = 'red';
+    ctx.fillRect(0, 450, 400, 5);
     // Drawing level
     drawBalls(ballsGrid);
     proyectile.draw();
@@ -43,18 +46,49 @@ function startGame() {
         character1.shooting = false;
         proyectile.collision = false;
         paintBall(ballsGrid, proyectile);
+        floating = deleteFloating(ballsGrid);
         proyectile.color = randomColor();
       }
     } else { 
+      floating.forEach((float) => {
+        if (float.y <= 550) {
+          float.display = true;
+          float.draw();
+          float.fallDown();
+        } 
+        else {
+          float.display = false;
+          float.color = '';
+        }
+      });
       proyectile.updateSpeed();
       proyectile.x = proyectile.x = canvas.width / 2;
       proyectile.y = canvas.height + character1.height / 2;
     }
     if (character1.counter === 3) {
       character1.counter = 0;
-      console.log('3 veces')
       addGrid(ballsGrid);
     }
+    ballsGrid[ballsGrid.length - 1].forEach((lastBalls) => {
+      if(lastBalls.color) {
+        setTimeout(() => {
+          clearInterval(intervalId);
+          alert('perdiste')
+        },50);
+      }
+    });
+    ballsGrid[0].forEach((firstBalls) => {
+      if(!firstBalls.color) {
+        winCounter -= 1;
+      }
+      if (winCounter === 0) {
+        setTimeout(() => {
+          clearInterval(intervalId);
+          alert('ganaste')
+        },50);
+      }
+    });
+    winCounter = 8;
   }, 1000 / 60);
 }
 
@@ -73,7 +107,6 @@ function detectKeysPressed(character) {
         event.preventDefault();
         character.shooting = true;
         character.counter += 1;
-        console.log(character.counter)
         proyectile.moving = true; 
         break;
       case 'ArrowUp':
@@ -119,7 +152,6 @@ function addGrid(ballsGrid) {
       rowAdd.push(new EnemyBall((i * 2 + 1) * ballsRadio, ballsRadio, ballsRadio, randomColor(), '', canvas, ctx))
     }
   }
-  console.log(ballsGrid)
   ballsGrid.forEach((row) => {
     row.forEach((ball) => {
       ball.y += 2 * ball.radius;
@@ -127,7 +159,6 @@ function addGrid(ballsGrid) {
   })
   ballsGrid.unshift(rowAdd);
   ballsGrid.pop();
-  console.log(ballsGrid)
   return ballsGrid;
 } 
 
@@ -200,7 +231,7 @@ function paintBall(ballsGrid, proyectile) {
   paintedBall.color = proyectile.color;
   paintedBall.showBall();
   deleteSameBalls(paintedBall, ballsGrid)
-  deleteFloating(ballsGrid);
+  
   return paintedBall;
 }
 
@@ -300,8 +331,8 @@ function deleteFloating(ballsGrid) {
       if (ball.y > ball.radius && ball.color) {
         if(!(uniqueBalls.includes(ball))) {
           ball.display = false;
-          ball.color = ''
           floating.push(ball)
+          // ball.color = ''
         }
       }
     });
@@ -322,9 +353,7 @@ function getAroundBalls(comparingBall, ballsGrid) {
         (ball.x === comparingBall.x - comparingBall.radius && ball.y === comparingBall.y + 2 * comparingBall.radius) ||
         (ball.x === comparingBall.x + comparingBall.radius && ball.y === comparingBall.y + 2 * comparingBall.radius)
         ) {
-        // if ( ball.color === comparingBall.color) {
-          ballsNear.push(ball)
-        // }
+        ballsNear.push(ball)
       }
     });
   });

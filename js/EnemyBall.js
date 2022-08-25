@@ -18,5 +18,7 @@ export class EnemyBall extends Ball {
       this.ctx.closePath();
     }
   }
-  fallDown() {}
+  fallDown() {
+    this.y += 5;
+  }
 }
