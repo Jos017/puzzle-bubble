@@ -12,6 +12,7 @@ export class Character {
     this.pointerX = canvas.width / 2;
     this.pointerY = 0;
     this.shooting = false;
+    this.counter = 0;
   }
   aimLeft() {
     if (this.pointerX >= 10 && this.pointerY === 0) {

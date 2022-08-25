@@ -6,29 +6,29 @@ const canvas = document.getElementById('canvas');
 const ctx = canvas.getContext('2d');
 
 const character1 = new Character((canvas.width - 50) / 2, canvas.height, 50, -100, '', '', 3, 0, canvas, ctx);
-// const character2 = new Character((canvas.width - 50) / 2, canvas.height, 50, -100, '', '', 3, 0, ctx);
 const proyectile = new ProyectileBall(canvas.width / 2, canvas.height + character1.height / 2, 25, randomColor(), '', canvas, ctx, character1);
 
-const level2 = [
+const level3 = [
   ['R','R','Y','Y','B','B','G','G'],
   ['R','R','Y','Y','B','B','G'],
   ['B','B','G','G','R','R','Y','Y'],
   ['B','G','G','R','R','Y','Y']
 ];
-const level1 = [
+const level1  = [
   ['R','R','R','Y','B','B','G','G'],
   ['R','R','R','Y','B','B','G'],
   ['B','B','R','G','R','R','Y','Y'],
-  ['B','G','R','R','R','Y','Y']
+  ['B','G','R','R','R','Y','Y'],
+  ['R','R','R','Y','B','B','G', 'B']
 ]
-// const level1 = [['R']];
+const level2 = [['R']] ;
 const balls = [];
 
 function startGame() {
   detectKeysPressed(character1);
   const ballsGrid = createBallsGrid();
   transformLevelToBalls(level1, ballsGrid);
-  // deleteBalls(ballsGrid[2][3], ballsGrid);
+  // deleteSameBalls(ballsGrid[2][3], ballsGrid);
   setInterval(() => {
     ctx.clearRect(0, 0, canvas.width, canvas.height)
     character1.draw();
@@ -50,12 +50,16 @@ function startGame() {
       proyectile.x = proyectile.x = canvas.width / 2;
       proyectile.y = canvas.height + character1.height / 2;
     }
+    if (character1.counter === 3) {
+      character1.counter = 0;
+      console.log('3 veces')
+      addGrid(ballsGrid);
+    }
   }, 1000 / 60);
 }
 
 function detectKeysPressed(character) {
   document.addEventListener('keydown', (event) => {
-    // console.log(event.code);
     switch (event.code) {
       case 'ArrowLeft':
         event.preventDefault();
@@ -68,6 +72,8 @@ function detectKeysPressed(character) {
       case 'Space':
         event.preventDefault();
         character.shooting = true;
+        character.counter += 1;
+        console.log(character.counter)
         proyectile.moving = true; 
         break;
       case 'ArrowUp':
@@ -100,6 +106,30 @@ function createBallsGrid() {
   }
   return ballsGrid;
 }
+
+function addGrid(ballsGrid) {
+  const rowAdd = [];
+  const ballsRadio = 25;
+  if(ballsGrid[0].length === 8) {
+    for(let i = 0; i < 7; i ++) {
+      rowAdd.push(new EnemyBall((i + 1) * 2 * ballsRadio, ballsRadio, ballsRadio, randomColor(), '', canvas, ctx))
+    }
+  } else {
+    for(let i = 0; i < 8; i ++) {
+      rowAdd.push(new EnemyBall((i * 2 + 1) * ballsRadio, ballsRadio, ballsRadio, randomColor(), '', canvas, ctx))
+    }
+  }
+  console.log(ballsGrid)
+  ballsGrid.forEach((row) => {
+    row.forEach((ball) => {
+      ball.y += 2 * ball.radius;
+    })
+  })
+  ballsGrid.unshift(rowAdd);
+  ballsGrid.pop();
+  console.log(ballsGrid)
+  return ballsGrid;
+} 
 
 function transformLevelToBalls(level, ballsGrid) {
   level.forEach((row, index) => {
@@ -169,7 +199,8 @@ function paintBall(ballsGrid, proyectile) {
   const paintedBall = ballsGrid[index[0]][index[1]];
   paintedBall.color = proyectile.color;
   paintedBall.showBall();
-  deleteBalls(paintedBall, ballsGrid)
+  deleteSameBalls(paintedBall, ballsGrid)
+  deleteFloating(ballsGrid);
   return paintedBall;
 }
 
@@ -185,15 +216,30 @@ function getCentersDistance(ball1, ball2) {
   return Math.sqrt(distanceX**2 + distanceY**2)
 }
 
-function deleteBalls(comparingBall, ballsGrid) {
-  let sameBalls = getAroundBallsColor(comparingBall, ballsGrid);
+function deleteSameBalls(comparingBall, ballsGrid) {
+  let nearBalls = getAroundBalls(comparingBall, ballsGrid);
+  let sameBalls = [];
   let allColors = [];
   let uniqueBalls = [];
+
+  // Get Starting same balls
+  nearBalls.forEach((ball) => {
+    if (ball.color === comparingBall.color) {
+      sameBalls.push(ball);
+    }
+  });
+
   // Iterates for get more same color balls
   // 2, 3
   for (let i = 0; i < ballsGrid.length; i++) {
     sameBalls.forEach((balls) => {
-      const sameColor = getAroundBallsColor(balls, ballsGrid);
+      const nearBallsIteration = getAroundBalls(balls, ballsGrid);
+      const sameColor = [];
+      nearBallsIteration.forEach((ball) => {
+        if (ball.color === comparingBall.color) {
+          sameColor.push(ball);
+        }
+      });
       allColors = allColors.concat(sameColor);
       sameBalls = sameBalls.concat(allColors)
     });
@@ -202,9 +248,8 @@ function deleteBalls(comparingBall, ballsGrid) {
     })
     sameBalls = uniqueBalls;
   }
-  console.log(sameBalls)
+
   // Gets array of unique balls
-  console.log('unique',uniqueBalls)
   if (uniqueBalls.length >= 3) {
     uniqueBalls.forEach((ball) => {
       ball.display = false;
@@ -213,20 +258,62 @@ function deleteBalls(comparingBall, ballsGrid) {
   }
 }
 
-function getAroundBallsColor(comparingBall, ballsGrid) {
-  // get index of the ball to compare
-  let index;
-  let ballsNear = [];
-  ballsGrid.forEach((row, rindex) => {
-    row.forEach((ball, bindex) => {
-      if(comparingBall.x === ball.x && comparingBall.y === ball.y) {
-        index = [rindex, bindex];
+function deleteFloating(ballsGrid) {
+  
+  let firstRow = ballsGrid[0];
+  let nearBalls = [];
+  let allBalls = [];
+  let uniqueBalls = [];
+  let floating = [];
+
+  firstRow.forEach((colorBall) => {
+    if (colorBall.color) {
+      const firstMatch = getAroundBalls(colorBall, ballsGrid);
+      firstMatch.forEach((fball) => {
+        if (fball.color) {
+          nearBalls.push(fball)
+        }
+      });
+    }
+  });
+
+  for (let i = 0; i < ballsGrid.length; i++){
+    nearBalls.forEach((nball) => {
+      const nearBallsIteration = getAroundBalls(nball, ballsGrid);
+      const collidingBalls = [];
+      nearBallsIteration.forEach((ball) => {
+        if (ball.color) {
+          collidingBalls.push(ball);
+        }
+      });
+      allBalls = allBalls.concat(collidingBalls);
+      nearBalls = nearBalls.concat(allBalls);
+    });
+    uniqueBalls = nearBalls.filter((ball, index) => {
+      return nearBalls.indexOf(ball) === index;
+    })
+    nearBalls = uniqueBalls;
+  }
+
+  ballsGrid.forEach((row) => {
+    row.forEach((ball) => {
+      if (ball.y > ball.radius && ball.color) {
+        if(!(uniqueBalls.includes(ball))) {
+          ball.display = false;
+          ball.color = ''
+          floating.push(ball)
+        }
       }
     });
   });
+  return floating;
+}
+
+function getAroundBalls(comparingBall, ballsGrid) {
   // Compare all 6 balls around
-  ballsGrid.forEach((row, rindex) => {
-    row.forEach((ball, bindex) => {
+  let ballsNear = [];
+  ballsGrid.forEach((row) => {
+    row.forEach((ball) => {
       if(
         (ball.x === comparingBall.x - comparingBall.radius && ball.y === comparingBall.y - 2 * comparingBall.radius) ||
         (ball.x === comparingBall.x + comparingBall.radius && ball.y === comparingBall.y - 2 * comparingBall.radius) ||
@@ -235,9 +322,9 @@ function getAroundBallsColor(comparingBall, ballsGrid) {
         (ball.x === comparingBall.x - comparingBall.radius && ball.y === comparingBall.y + 2 * comparingBall.radius) ||
         (ball.x === comparingBall.x + comparingBall.radius && ball.y === comparingBall.y + 2 * comparingBall.radius)
         ) {
-        if (ball.color === comparingBall.color) {
+        // if ( ball.color === comparingBall.color) {
           ballsNear.push(ball)
-        }
+        // }
       }
     });
   });
