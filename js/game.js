@@ -26,13 +26,10 @@ main.appendChild(scoreTag);
 scoreTag.innerHTML = `Score: <span>${score}</span>`
 scoreTag.id = 'score';
 
-const arrow = new Image();
-arrow.src = '../images/arrow-pointer.png';
-
 const character1 = new Character((canvas.width - 50) / 2, canvas.height, 50, -120, '', '', 3, 0, canvas, ctx);
 const proyectile = new ProyectileBall(canvas.width / 2, canvas.height + character1.height / 2, 25, randomColor(), '', canvas, ctx, character1);
 
-const level3 = [
+const level1 = [
   ['R','R','Y','Y','B','B','G','G'],
   ['R','R','Y','Y','B','B','G'],
   ['B','B','G','G','R','R','Y','Y'],
@@ -45,7 +42,7 @@ const level2  = [
   ['B','G','R','R','R','Y','Y'],
   ['R','R','R','Y','B','B','G', 'B']
 ]
-const level1 = [['R', 'R', 'R']] ;
+const level3 = [['R', 'R', 'R']] ;
 const balls = [];
 
 function startGame() {
@@ -130,7 +127,6 @@ function detectKeysPressed(character) {
       case 'ArrowLeft':
         event.preventDefault();
         character.aimLeft();
-        rotation += 1;
         break;
       case 'ArrowRight':
         event.preventDefault();
