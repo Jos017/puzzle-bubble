@@ -4,7 +4,10 @@ export class Character {
     this.y = y;
     this.width = width;
     this.height = height;
-    this.image = image;
+    this.image = new Image;
+    this.image.src = '../images/ball-handler.png';
+    this.imageSecond = new Image;
+    this.imageSecond.src = '../images/bobble.png'
     this.name = name;
     this.lives = lives;
     this.score = score;
@@ -43,7 +46,10 @@ export class Character {
     this.ctx.beginPath();
     this.ctx.moveTo(canvas.width / 2, canvas.height + this.height / 2);
     this.ctx.lineTo(this.pointerX, this.pointerY);
+    this.ctx.lineWidth = 5;
     this.ctx.stroke();
     this.ctx.closePath();
+    this.ctx.drawImage(this.image, this.x - 45, this.y, this.width + 80, this.height);
+    this.ctx.drawImage(this.imageSecond, this.x - 160, this.y, this.width + 50, this.height);
   }
 }

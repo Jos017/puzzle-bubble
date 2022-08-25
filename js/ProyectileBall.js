@@ -3,6 +3,21 @@ import { Ball } from "./Ball.js";
 export class ProyectileBall extends Ball {
   constructor(x, y, radius, color, image, canvas, ctx, character) {
     super(x, y, radius, color, image, canvas, ctx);
+    this.image = new Image();
+    switch (this.color) {
+      case 'red':
+        this.image.src = '../images/red-ball.png';
+        break;
+      case 'blue':
+        this.image.src = '../images/blue-ball.png';
+        break;
+      case 'green':
+        this.image.src = '../images/green-ball.png';
+        break;
+      case 'yellow':
+        this.image.src = '../images/yellow-ball.png';
+        break;
+    }
     this.character = character;
     this.speedX = 0;
     this.speedY = 0;

@@ -2,10 +2,34 @@ import { Character } from "./Character.js";
 import { ProyectileBall } from "./ProyectileBall.js"
 import { EnemyBall } from "./EnemyBall.js";
 
+const loseModal = document.getElementById('lose-modal');
+const loseModalBtn = document.getElementById('lose-btn');
+const winModal = document.getElementById('win-modal');
+const winModalBtn = document.getElementById('win-btn');
+
+loseModalBtn.addEventListener('click', () => {
+  startGame();
+  loseModal.style.display = 'none';
+});
+winModalBtn.addEventListener('click', () => {
+  startGame();
+  winModal.style.display = 'none';
+});
+
 const canvas = document.getElementById('canvas');
 const ctx = canvas.getContext('2d');
 
-const character1 = new Character((canvas.width - 50) / 2, canvas.height, 50, -100, '', '', 3, 0, canvas, ctx);
+let score = 0;
+const main = document.querySelector('main');
+const scoreTag = document.createElement('h2')
+main.appendChild(scoreTag);
+scoreTag.innerHTML = `Score: <span>${score}</span>`
+scoreTag.id = 'score';
+
+const arrow = new Image();
+arrow.src = '../images/arrow-pointer.png';
+
+const character1 = new Character((canvas.width - 50) / 2, canvas.height, 50, -120, '', '', 3, 0, canvas, ctx);
 const proyectile = new ProyectileBall(canvas.width / 2, canvas.height + character1.height / 2, 25, randomColor(), '', canvas, ctx, character1);
 
 const level3 = [
@@ -26,6 +50,8 @@ const balls = [];
 
 function startGame() {
   let floating = [];
+  let sameColor = [];
+  let deletedBalls = [];
   let winCounter = 8;
   detectKeysPressed(character1);
   const ballsGrid = createBallsGrid();
@@ -35,7 +61,9 @@ function startGame() {
     character1.draw();
     character1.drawAimAssist();
     ctx.fillStyle = 'red';
-    ctx.fillRect(0, 450, 400, 5);
+    ctx.fillRect(0, 500, 400, 5);
+    ctx.beginPath();
+    // ctx.drawImage(arrow, 162, 460, 80, 100);
     // Drawing level
     drawBalls(ballsGrid);
     proyectile.draw();
@@ -45,8 +73,11 @@ function startGame() {
       if (proyectile.collision === true) {
         character1.shooting = false;
         proyectile.collision = false;
-        paintBall(ballsGrid, proyectile);
+        sameColor = paintBall(ballsGrid, proyectile);
+        deletedBalls = deleteSameBalls(sameColor, ballsGrid)
         floating = deleteFloating(ballsGrid);
+        score += (deletedBalls.length + floating.length) * 10;
+        scoreTag.innerHTML = `Score: <span>${score}</span>`
         proyectile.color = randomColor();
       }
     } else { 
@@ -64,6 +95,7 @@ function startGame() {
       proyectile.updateSpeed();
       proyectile.x = proyectile.x = canvas.width / 2;
       proyectile.y = canvas.height + character1.height / 2;
+      drawImageByColor(proyectile);
     }
     if (character1.counter === 3) {
       character1.counter = 0;
@@ -73,7 +105,7 @@ function startGame() {
       if(lastBalls.color) {
         setTimeout(() => {
           clearInterval(intervalId);
-          alert('perdiste')
+          loseModal.style.display = 'block';
         },50);
       }
     });
@@ -84,7 +116,7 @@ function startGame() {
       if (winCounter === 0) {
         setTimeout(() => {
           clearInterval(intervalId);
-          alert('ganaste')
+          winModal.style.display = 'block';
         },50);
       }
     });
@@ -98,10 +130,12 @@ function detectKeysPressed(character) {
       case 'ArrowLeft':
         event.preventDefault();
         character.aimLeft();
+        rotation += 1;
         break;
       case 'ArrowRight':
         event.preventDefault();
         character.aimRight();
+        rotation -= 1;
         break;
       case 'Space':
         event.preventDefault();
@@ -179,8 +213,27 @@ function transformLevelToBalls(level, ballsGrid) {
           ballsGrid[index][cindex].color = 'green';
           break;
       }
+      drawImageByColor(ballsGrid[index][cindex]);
     });
   });
+}
+
+function drawImageByColor (ball) { 
+  ball.image = new Image();
+    switch (ball.color) {
+      case 'red':
+        ball.image.src = '../images/red-ball.png';
+        break;
+      case 'blue':
+        ball.image.src = '../images/blue-ball.png';
+        break;
+      case 'green':
+        ball.image.src = '../images/green-ball.png';
+        break;
+      case 'yellow':
+        ball.image.src = '../images/yellow-ball.png';
+        break;
+  }
 }
 
 function drawBalls(ballsGrid) {
@@ -230,8 +283,7 @@ function paintBall(ballsGrid, proyectile) {
   const paintedBall = ballsGrid[index[0]][index[1]];
   paintedBall.color = proyectile.color;
   paintedBall.showBall();
-  deleteSameBalls(paintedBall, ballsGrid)
-  
+  drawImageByColor(paintedBall)
   return paintedBall;
 }
 
@@ -252,6 +304,7 @@ function deleteSameBalls(comparingBall, ballsGrid) {
   let sameBalls = [];
   let allColors = [];
   let uniqueBalls = [];
+  let deletedBalls = [];
 
   // Get Starting same balls
   nearBalls.forEach((ball) => {
@@ -284,9 +337,11 @@ function deleteSameBalls(comparingBall, ballsGrid) {
   if (uniqueBalls.length >= 3) {
     uniqueBalls.forEach((ball) => {
       ball.display = false;
+      deletedBalls.push(ball);
       ball.color = ''
     });
   }
+  return deletedBalls;
 }
 
 function deleteFloating(ballsGrid) {
@@ -361,3 +416,4 @@ function getAroundBalls(comparingBall, ballsGrid) {
 }
 
 startGame();
+

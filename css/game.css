@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Silkscreen:wght@400;700&display=swap');
+
 * {
   box-sizing: border-box;
   margin: 0;
@@ -9,21 +11,115 @@ html {
 }
 
 body {
-  width: 100vw;
-  height: 100vh;
-  font-family: Arial, Helvetica, sans-serif;
-  font-size: 1.6rem;
-  background-color: wheat;
-}
-
-main {
-  width: 100%;
-  height: 100%;
   display: flex;
   justify-content: center;
   align-items: center;
+  width: 100vw;
+  height: 100vh;
+  font-size: 1.6rem;
+  background-color: wheat;
+  background-image: url(../images/page-background.jpg);
+  font-family: 'Silkscreen', cursive;
 }
 
-canvas {
-  background-color: lightseagreen;
+main {
+  position: relative;
+  width: 1020px;
+  height: 715px;
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  background-image: url(../images/game-background.png);
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: contain;
+  background-color: red;
+}
+
+#score {
+  position: absolute;
+  top: 20px;
+  left: 300px;
+  font-size: 24px;
+  background-color: #ffdd5c;
+  border-radius: 15px;
+  padding: 5px;
+  text-align: center;
+}
+
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 1;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgb(0, 0, 0, 0.4);
+}
+
+.modal-content {
+  position: relative;
+  width: 700px;
+  height: 400px;
+  min-width: 300px;
+  max-width: 700px;
+  margin: 15vh auto;
+  padding: 20px;
+  border: 1px solid #888;
+  border-radius: 8px;
+  background-color: #fefefe;
+}
+
+.close {
+  float: right;
+  cursor: pointer;
+  color: #aaa;
+  font-size: 2.8rem;
+  font-weight: bold;
+}
+
+#lose {
+  background-image: url('../images/lose-banner.jpg');
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: 0 -60px;
+}
+
+#win {
+  background-image: url('../images/win-banner.jpg');
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: 0 -60px;
+}
+
+.restart-btn {
+  position: absolute;
+  left: 275px;
+  bottom: -25px;
+  width: 150px;
+  height: 50px;
+  border-width: 3px;
+  border-radius: 10px;
+  font-family: 'Silkscreen', cursive;
+  font-weight: bold;
+}
+
+#lose-btn {
+  background-color: rgb(237, 52, 45);
+}
+#lose-btn:hover {
+  cursor: pointer;
+  border-color: white;
+  color: #fff;
+  background-color: rgb(95, 27, 25);
+}
+#win-btn {
+  background-color: rgb(241, 184, 53);
+}
+#win-btn:hover {
+  cursor: pointer;
+  border-color: white;
+  color: #fff;
+  background-color: rgb(225, 113, 37);
 }
