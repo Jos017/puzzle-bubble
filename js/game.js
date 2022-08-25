@@ -54,8 +54,9 @@ main.appendChild(scoreTag);
 scoreTag.innerHTML = `Score: <span>${score}</span>`
 scoreTag.id = 'score';
 
+const initialColors = ['red', 'yellow', 'green', 'blue'];
 const character1 = new Character((canvas.width - 50) / 2, canvas.height, 50, -120, '', '', 3, 0, canvas, ctx);
-const proyectile = new ProyectileBall(canvas.width / 2, canvas.height + character1.height / 2, 25, randomColor(), '', canvas, ctx, character1);
+const proyectile = new ProyectileBall(canvas.width / 2, canvas.height + character1.height / 2, 25, randomColor(initialColors), '', canvas, ctx, character1);
 
 const level3 = [
   ['R','R','Y','Y','B','B','G','G'],
@@ -105,7 +106,7 @@ function startGame() {
         floating = deleteFloating(ballsGrid);
         score += (deletedBalls.length + floating.length) * 10;
         scoreTag.innerHTML = `Score: <span>${score}</span>`
-        proyectile.color = randomColor();
+        proyectile.color = randomColor(getCurrentColorsOnBoard(ballsGrid));
       }
     } else { 
       floating.forEach((float) => {
@@ -213,11 +214,11 @@ function addGrid(ballsGrid) {
   const ballsRadio = 25;
   if(ballsGrid[0].length === 8) {
     for(let i = 0; i < 7; i ++) {
-      rowAdd.push(new EnemyBall((i + 1) * 2 * ballsRadio, ballsRadio, ballsRadio, randomColor(), '', canvas, ctx))
+      rowAdd.push(new EnemyBall((i + 1) * 2 * ballsRadio, ballsRadio, ballsRadio, randomColor(initialColors), '', canvas, ctx))
     }
   } else {
     for(let i = 0; i < 8; i ++) {
-      rowAdd.push(new EnemyBall((i * 2 + 1) * ballsRadio, ballsRadio, ballsRadio, randomColor(), '', canvas, ctx))
+      rowAdd.push(new EnemyBall((i * 2 + 1) * ballsRadio, ballsRadio, ballsRadio, randomColor(initialColors), '', canvas, ctx))
     }
   }
   ballsGrid.forEach((row) => {
@@ -321,8 +322,7 @@ function paintBall(ballsGrid, proyectile) {
   return paintedBall;
 }
 
-function randomColor() {
-  const colors = ['red', 'yellow', 'green', 'blue'];
+function randomColor(colors) {
   const randColor = colors[Math.floor(Math.random()*colors.length)];
   return randColor;
 }
@@ -449,6 +449,24 @@ function getAroundBalls(comparingBall, ballsGrid) {
     });
   });
   return ballsNear;
+}
+
+function getCurrentColorsOnBoard(ballsGrid) {
+  let currentBalls = [];
+  let currentColors = [];
+  let uniqueColors = [];
+  ballsGrid.forEach((row) => {
+    row.forEach((ball) => {
+      if (ball.color) {
+        currentBalls.push(ball);
+      }
+    });
+  });
+  currentColors = currentBalls.map((fball) => fball.color);
+  uniqueColors = currentColors.filter((color, index) => {
+    return currentColors.indexOf(color) === index;
+  });
+  return uniqueColors;
 }
 
 startGame();

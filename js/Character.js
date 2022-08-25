@@ -35,12 +35,8 @@ export class Character {
       this.pointerY += 10;
     }
   }
-  selectBall() {}
-  win() {}
-  lose() {}
   draw() {
-    this.ctx.fillStyle = 'blue';
-    this.ctx.fillRect(this.x, this.y, this.width, this.height);
+    this.ctx.drawImage(this.imageSecond, this.x - 160, this.y, this.width + 50, this.height);
   }
   drawAimAssist() {
     this.ctx.beginPath();
@@ -50,6 +46,5 @@ export class Character {
     this.ctx.stroke();
     this.ctx.closePath();
     this.ctx.drawImage(this.image, this.x - 45, this.y, this.width + 80, this.height);
-    this.ctx.drawImage(this.imageSecond, this.x - 160, this.y, this.width + 50, this.height);
   }
 }
