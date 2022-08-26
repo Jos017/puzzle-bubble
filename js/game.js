@@ -19,6 +19,8 @@ const loseModal = document.getElementById('lose-modal');
 const loseModalBtn = document.getElementById('lose-btn');
 const winModal = document.getElementById('win-modal');
 const winModalBtn = document.getElementById('win-btn');
+const soundBtnImg = document.querySelector('#sound-btn img');
+const soundBtn = document.getElementById('sound-btn');
 
 loseModalBtn.addEventListener('click', () => {
   startGame();
@@ -42,7 +44,17 @@ winModalBtn.addEventListener('mouseenter', () => {
 loseModalBtn.addEventListener('mouseenter', () => {
   audioOnHover.play();
 });
-
+soundBtn.addEventListener('click', () => {
+  if (soundBtn.classList.contains('muted')) {
+    soundBtnImg.src = './images/sound.png';
+    soundBtn.classList.toggle('muted');
+    bgAudio.play();
+  } else {
+    soundBtnImg.src = './images/mute.png';
+    soundBtn.classList.toggle('muted');
+    bgAudio.pause();
+  }
+});
 
 const canvas = document.getElementById('canvas');
 const ctx = canvas.getContext('2d');

@@ -13,6 +13,20 @@ const audioOnHover = new Audio('./sounds/buttons-sound.wav');
 audioOnHover.volume = 0.4;
 const audioOnClick = new Audio('./sounds/pop-click.wav');
 audioOnClick.volume = 0.4;
+const soundBtnImg = document.querySelector('#sound-btn img');
+const soundBtn = document.getElementById('sound-btn');
+
+soundBtn.addEventListener('click', () => {
+  if (soundBtn.classList.contains('muted')) {
+    soundBtnImg.src = './images/sound.png';
+    soundBtn.classList.toggle('muted');
+    bgAudio.play();
+  } else {
+    soundBtnImg.src = './images/mute.png';
+    soundBtn.classList.toggle('muted');
+    bgAudio.pause();
+  }
+});
 
 playBtn.addEventListener('mouseenter', () => {
   audioOnHover.play();

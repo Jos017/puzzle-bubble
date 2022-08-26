@@ -5,6 +5,7 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Puzzle Bubble</title>
+  <link rel="icon" href="./images/bobble.ico" type="image/x-icon">
   <link rel="stylesheet" href="./css/styles.css" />
 </head>
 <body>
@@ -17,6 +18,7 @@
     <img id="sad" src="./images/lose-image.png" alt="little sad dinosaur">
     <img id="happy" src="./images/win-image.png" alt="little happy dinosaurs">
     <img id="serius" src="./images/bobble.png" alt="little serius dinosaur">
+    <button id="sound-btn" class="mute"><img src="./images/mute.png"></button>
   </ul>
   <div id="instructions-modal" class="modal">
     <div id="instructions" class="modal-content">
@@ -48,10 +50,9 @@
       <p>The game is inspired in the game Puzzle Bobble developed by Taito Corporation for Arcade</p>
     </div>
   </div>
-  <audio id="bg-audio" autoplay loop>
+  <audio id="bg-audio" loop>
     <source  src="./sounds/puzzle-bobble-theme.mp3" type="audio/mpeg">
   </audio>
-  <div></div>
   <script src="./js/code.js"></script>
 </body>
 </html>
