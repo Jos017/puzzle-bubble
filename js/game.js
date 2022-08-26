@@ -87,6 +87,7 @@ const level2 = [['R', 'R', 'R']] ;
 let startListener = true;
 
 function startGame() {
+  // Start creating level
   let floating = [];
   let sameColor = [];
   let deletedBalls = [];
@@ -97,6 +98,7 @@ function startGame() {
   }
   const ballsGrid = createBallsGrid();
   transformLevelToBalls(level1, ballsGrid);
+
   let intervalId = setInterval(() => {
     ctx.clearRect(0, 0, canvas.width, canvas.height)
     character1.draw();
@@ -110,6 +112,7 @@ function startGame() {
     if (character1.shooting === true) {
       proyectile.move();
       detectCollision(ballsGrid, proyectile);
+      // Compare collisions
       if (proyectile.collision === true) {
         character1.shooting = false;
         proyectile.collision = false;
@@ -120,7 +123,8 @@ function startGame() {
         scoreTag.innerHTML = `Score: <span>${score}</span>`
         proyectile.color = randomColor(getCurrentColorsOnBoard(ballsGrid));
       }
-    } else { 
+    } else {
+      // Draw proyectile and falling balls 
       floating.forEach((float) => {
         if (float.y <= 550) {
           float.display = true;
@@ -137,16 +141,18 @@ function startGame() {
       proyectile.y = canvas.height + character1.height / 2;
       drawImageByColor(proyectile);
     }
-    if (character1.counter === 5) {
+    // Level Difficulty
+    if (character1.counter === 8) {
       addGrid(ballsGrid);
       gridDownAudio.pause();
       gridDownAudio.currentTime = 0.2;
       gridDownAudio.play();
       character1.counter = 0;
       canvas.classList.remove('shaking');
-    } else if (character1.counter === 4) {
+    } else if (character1.counter === 7) {
       canvas.classList.add('shaking');
     }
+    // Lose Condition
     ballsGrid[ballsGrid.length - 1].forEach((lastBalls) => {
       if(lastBalls.color) {
         setTimeout(() => {
@@ -156,6 +162,7 @@ function startGame() {
         },50);
       }
     });
+    // Win Condition
     ballsGrid[0].forEach((firstBalls) => {
       if(!firstBalls.color) {
         winCounter -= 1;
